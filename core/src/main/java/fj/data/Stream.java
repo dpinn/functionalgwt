@@ -12,8 +12,6 @@ import fj.P;
 import fj.P1;
 import fj.P2;
 import fj.Unit;
-import fj.control.parallel.Promise;
-import fj.control.parallel.Strategy;
 import fj.Ordering;
 
 import java.util.AbstractCollection;
@@ -26,11 +24,9 @@ import static fj.Function.compose;
 import static fj.Function.constant;
 import static fj.Function.curry;
 import static fj.Function.flip;
-import static fj.Function.identity;
 import static fj.P.p;
 import static fj.P.p2;
 import static fj.Unit.unit;
-import static fj.control.parallel.Promise.promise;
 import static fj.data.Array.mkArray;
 import static fj.data.Option.none;
 import static fj.data.Option.some;
@@ -627,49 +623,6 @@ public abstract class Stream<A> implements Iterable<A> {
   }
 
   /**
-   * Sort this stream according to the given ordering, using a parallel Quick Sort algorithm that uses the given
-   * parallelisation strategy.
-   *
-   * @param o An ordering for the elements of this stream.
-   * @param s A strategy for parallelising the algorithm.
-   * @return A new stream with the elements of this stream sorted according to the given ordering.
-   */
-  public final Stream<A> sort(final Ord<A> o, final Strategy<Unit> s) {
-    return qs(o, s).claim();
-  }
-
-  private Promise<Stream<A>> qs(final Ord<A> o, final Strategy<Unit> s) {
-    if (isEmpty())
-      return promise(s, P.p(this));
-    else {
-      final F<Boolean, Boolean> id = identity();
-      final A x = head();
-      final P1<Stream<A>> xs = tail();
-      final Promise<Stream<A>> left = Promise.join(s, xs.map(flt(o, s, x, id)));
-      final Promise<Stream<A>> right = xs.map(flt(o, s, x, not))._1();
-      final Monoid<Stream<A>> m = Monoid.streamMonoid();
-      return right.fmap(m.sum(single(x))).apply(left.fmap(m.sum()));
-    }
-  }
-
-  private static <A> F<Stream<A>, Promise<Stream<A>>> qs_(final Ord<A> o, final Strategy<Unit> s) {
-    return new F<Stream<A>, Promise<Stream<A>>>() {
-      public Promise<Stream<A>> f(final Stream<A> xs) {
-        return xs.qs(o, s);
-      }
-    };
-  }
-
-  private static <A> F<Stream<A>, Promise<Stream<A>>> flt(final Ord<A> o,
-                                                          final Strategy<Unit> s,
-                                                          final A x,
-                                                          final F<Boolean, Boolean> f) {
-    final F<F<A, Boolean>, F<Stream<A>, Stream<A>>> filter = filter();
-    final F<A, Boolean> lt = o.isLessThan(x);
-    return compose(qs_(o, s), filter.f(compose(f, lt)));
-  }
-
-  /**
    * Projects an immutable collection of this stream.
    *
    * @return An immutable collection of this stream.
@@ -983,35 +936,6 @@ public abstract class Stream<A> implements Iterable<A> {
     }
 
     return mkArray(a);
-  }
-
-  /**
-   * Returns a array projection of this stream.
-   *
-   * @param c The class type of the array to return.
-   * @return A array projection of this stream.
-   */
-  @SuppressWarnings({"unchecked", "UnnecessaryFullyQualifiedName"})
-  public final Array<A> toArray(final Class<A[]> c) {
-    final A[] a = (A[]) java.lang.reflect.Array.newInstance(c.getComponentType(), length());
-
-    int i = 0;
-    for (final A x : this) {
-      a[i] = x;
-      i++;
-    }
-
-    return Array.array(a);
-  }
-
-  /**
-   * Returns an array from this stream.
-   *
-   * @param c The class type of the array to return.
-   * @return An array from this stream.
-   */
-  public final A[] array(final Class<A[]> c) {
-    return toArray(c).array(c);
   }
 
   /**
@@ -1489,7 +1413,7 @@ public abstract class Stream<A> implements Iterable<A> {
 
     Cons(final A head, final P1<Stream<A>> tail) {
       this.head = head;
-      this.tail = tail.memo();
+      this.tail = tail;
     }
 
     public A head() {

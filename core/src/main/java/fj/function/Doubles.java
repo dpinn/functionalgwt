@@ -74,7 +74,7 @@ public final class Doubles {
    */
   public static final F<Double, F<Double, Double>> power = curry(new F2<Double, Double, Double>() {
     public Double f(final Double a, final Double b) {
-      return StrictMath.pow(a, b);
+      return Math.pow(a, b);
     }
   });
 

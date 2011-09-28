@@ -20,7 +20,6 @@ import static fj.Function.compose;
 import static fj.P.p;
 import static fj.P.p2;
 import static fj.Unit.unit;
-import static fj.data.Array.array;
 import static fj.data.Array.mkArray;
 import static fj.data.List.Buffer.*;
 import static fj.data.Option.none;
@@ -181,7 +180,7 @@ public abstract class List<A> implements Iterable<A> {
    */
   @SuppressWarnings({"unchecked"})
   public final Array<A> toArray() {
-    final Object[] a = new Object[length()];
+    final A[] a = (A[]) new Object[length()];
     List<A> x = this;
     for (int i = 0; i < length(); i++) {
       a[i] = x.head();
@@ -189,34 +188,6 @@ public abstract class List<A> implements Iterable<A> {
     }
 
     return mkArray(a);
-  }
-
-  /**
-   * Returns a array projection of this list.
-   *
-   * @param c The class type of the array to return.
-   * @return A array projection of this list.
-   */
-  @SuppressWarnings({"unchecked", "UnnecessaryFullyQualifiedName"})
-  public final Array<A> toArray(final Class<A[]> c) {
-    final A[] a = (A[]) java.lang.reflect.Array.newInstance(c.getComponentType(), length());
-    List<A> x = this;
-    for (int i = 0; i < length(); i++) {
-      a[i] = x.head();
-      x = x.tail();
-    }
-
-    return Array.array(a);
-  }
-
-  /**
-   * Returns an array from this list.
-   *
-   * @param c The class type of the array to return.
-   * @return An array from this list.
-   */
-  public final A[] array(final Class<A[]> c) {
-    return toArray(c).array(c);
   }
 
   /**

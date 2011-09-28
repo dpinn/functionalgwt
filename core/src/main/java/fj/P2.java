@@ -181,26 +181,6 @@ public abstract class P2<A, B> {
   }
 
   /**
-   * Provides a memoising P2 that remembers its values.
-   *
-   * @return A P2 that calls this P2 once for any given element and remembers the value for subsequent calls.
-   */
-  public final P2<A, B> memo() {
-    return new P2<A, B>() {
-      private final P1<A> a = _1_().memo();
-      private final P1<B> b = _2_().memo();
-
-      public A _1() {
-        return a._1();
-      }
-
-      public B _2() {
-        return b._1();
-      }
-    };
-  }
-
-  /**
    * A first-class version of the split function.
    *
    * @param f A function that will map the first element of the given product.

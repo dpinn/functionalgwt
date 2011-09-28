@@ -121,31 +121,6 @@ public abstract class P3<A, B, C> {
   }
 
   /**
-   * Provides a memoising P3 that remembers its values.
-   *
-   * @return A P3 that calls this P3 once for any given element and remembers the value for subsequent calls.
-   */
-  public final P3<A, B, C> memo() {
-    return new P3<A, B, C>() {
-      private final P1<A> a = _1_().memo();
-      private final P1<B> b = _2_().memo();
-      private final P1<C> c = _3_().memo();
-
-      public A _1() {
-        return a._1();
-      }
-
-      public B _2() {
-        return b._1();
-      }
-
-      public C _3() {
-        return c._1();
-      }
-    };
-  }
-
-  /**
    * Returns a function that returns the first element of a product.
    *
    * @return A function that returns the first element of a product.

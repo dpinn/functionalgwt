@@ -5,13 +5,11 @@ import fj.F;
 import fj.Show;
 import fj.data.List;
 import fj.data.Option;
+
 import static fj.data.Option.some;
 import static fj.Show.listShow;
 import static fj.Show.showS;
 import static fj.test.Arg.argShow;
-
-import java.io.StringWriter;
-import java.io.PrintWriter;
 
 /**
  * An enumeration of the possible results after checking a property. A <code>CheckResult</code> may
@@ -249,15 +247,11 @@ public final class CheckResult {
           return "Gave up after " + r.succeeded() + " passed " + test(r) + " and " + r.discarded() +
               " discarded tests.";
         else if (r.isPropException()) {
-          final StringWriter sw = new StringWriter();
-          final PrintWriter pw = new PrintWriter(sw);
-          r.exception().some().printStackTrace(pw);
-          return "Exception on property evaluation with " + arguments(r) + System.getProperty("line.separator") + sw;
+          r.exception().some().printStackTrace();
+          return "Exception on property evaluation with " + arguments(r);
         } else if (r.isGenException()) {
-          final StringWriter sw = new StringWriter();
-          final PrintWriter pw = new PrintWriter(sw);
-          r.exception().some().printStackTrace(pw);
-          return "Exception on argument generation " + System.getProperty("line.separator") + sw;
+          r.exception().some().printStackTrace();
+          return "Exception on argument generation";
         } else
           throw decons(r.getClass());
       }

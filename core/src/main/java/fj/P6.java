@@ -307,46 +307,6 @@ public abstract class P6<A, B, C, D, E, F> {
     return P6.<A, B, C, D, E, F>__6().lazy().f(this);
   }
 
-  /**
-   * Provides a memoising P6 that remembers its values.
-   *
-   * @return A P6 that calls this P6 once for any given element and remembers the value for subsequent calls.
-   */
-  public final P6<A, B, C, D, E, F> memo() {
-    return new P6<A, B, C, D, E, F>() {
-      private final P1<A> a = _1_().memo();
-      private final P1<B> b = _2_().memo();
-      private final P1<C> c = _3_().memo();
-      private final P1<D> d = _4_().memo();
-      private final P1<E> e = _5_().memo();
-      private final P1<F> f = _6_().memo();
-
-      public A _1() {
-        return a._1();
-      }
-
-      public B _2() {
-        return b._1();
-      }
-
-      public C _3() {
-        return c._1();
-      }
-
-      public D _4() {
-        return d._1();
-      }
-
-      public E _5() {
-        return e._1();
-      }
-
-      public F _6() {
-        return f._1();
-      }
-    };
-  }
-
 
   /**
    * Returns a function that returns the first element of a product.

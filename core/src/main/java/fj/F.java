@@ -1,7 +1,6 @@
 package fj;
 
 import fj.control.parallel.Actor;
-import fj.control.parallel.Promise;
 import fj.control.parallel.Strategy;
 import fj.data.Array;
 import fj.data.Either;
@@ -20,13 +19,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.TreeSet;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 
 import static fj.data.Option.some;
 import static fj.data.Stream.iterableStream;
@@ -333,29 +325,6 @@ public abstract class F<A, B> {
     return new F<Actor<B>, Actor<A>>() {
       public Actor<A> f(final Actor<B> a) {
         return a.comap(F.this);
-      }
-    };
-  }
-
-  /**
-   * Promotes this function to a concurrent function that returns a Promise of a value.
-   *
-   * @param s A parallel strategy for concurrent execution.
-   * @return A concurrent function that returns a Promise of a value.
-   */
-  public final F<A, Promise<B>> promiseK(final Strategy<Unit> s) {
-    return Promise.promise(s, this);
-  }
-
-  /**
-   * Promotes this function to map over a Promise.
-   *
-   * @return This function promoted to map over Promises.
-   */
-  public final F<Promise<A>, Promise<B>> mapPromise() {
-    return new F<Promise<A>, Promise<B>>() {
-      public Promise<B> f(final Promise<A> p) {
-        return p.fmap(F.this);
       }
     };
   }
@@ -733,82 +702,6 @@ public abstract class F<A, B> {
       }
     };
   }
-
-  /**
-   * Maps this function over a SynchronousQueue.
-   *
-   * @param as A SynchronousQueue to map this function over.
-   * @return A new SynchronousQueue with this function applied to each element.
-   */
-  public final SynchronousQueue<B> mapJ(final SynchronousQueue<A> as) {
-    final SynchronousQueue<B> bs = new SynchronousQueue<B>();
-    bs.addAll(iterableStream(as).map(this).toCollection());
-    return bs;
-  }
-
-
-  /**
-   * Maps this function over a PriorityBlockingQueue.
-   *
-   * @param as A PriorityBlockingQueue to map this function over.
-   * @return A new PriorityBlockingQueue with this function applied to each element.
-   */
-  public final PriorityBlockingQueue<B> mapJ(final PriorityBlockingQueue<A> as) {
-    return new PriorityBlockingQueue<B>(iterableStream(as).map(this).toCollection());
-  }
-
-  /**
-   * Maps this function over a LinkedBlockingQueue.
-   *
-   * @param as A LinkedBlockingQueue to map this function over.
-   * @return A new LinkedBlockingQueue with this function applied to each element.
-   */
-  public final LinkedBlockingQueue<B> mapJ(final LinkedBlockingQueue<A> as) {
-    return new LinkedBlockingQueue<B>(iterableStream(as).map(this).toCollection());
-  }
-
-  /**
-   * Maps this function over a CopyOnWriteArraySet.
-   *
-   * @param as A CopyOnWriteArraySet to map this function over.
-   * @return A new CopyOnWriteArraySet with this function applied to each element.
-   */
-  public final CopyOnWriteArraySet<B> mapJ(final CopyOnWriteArraySet<A> as) {
-    return new CopyOnWriteArraySet<B>(iterableStream(as).map(this).toCollection());
-  }
-
-  /**
-   * Maps this function over a CopyOnWriteArrayList.
-   *
-   * @param as A CopyOnWriteArrayList to map this function over.
-   * @return A new CopyOnWriteArrayList with this function applied to each element.
-   */
-  public final CopyOnWriteArrayList<B> mapJ(final CopyOnWriteArrayList<A> as) {
-    return new CopyOnWriteArrayList<B>(iterableStream(as).map(this).toCollection());
-  }
-
-  /**
-   * Maps this function over a ConcurrentLinkedQueue.
-   *
-   * @param as A ConcurrentLinkedQueue to map this function over.
-   * @return A new ConcurrentLinkedQueue with this function applied to each element.
-   */
-  public final ConcurrentLinkedQueue<B> mapJ(final ConcurrentLinkedQueue<A> as) {
-    return new ConcurrentLinkedQueue<B>(iterableStream(as).map(this).toCollection());
-  }
-
-  /**
-   * Maps this function over an ArrayBlockingQueue.
-   *
-   * @param as An ArrayBlockingQueue to map this function over.
-   * @return A new ArrayBlockingQueue with this function applied to each element.
-   */
-  public final ArrayBlockingQueue<B> mapJ(final ArrayBlockingQueue<A> as) {
-    final ArrayBlockingQueue<B> bs = new ArrayBlockingQueue<B>(as.size());
-    bs.addAll(iterableStream(as).map(this).toCollection());
-    return bs;
-  }
-
 
   /**
    * Maps this function over a TreeSet.

@@ -1,6 +1,5 @@
 package fj;
 
-import fj.control.parallel.Promise;
 import fj.data.Array;
 import fj.data.IterableW;
 import fj.data.List;
@@ -101,19 +100,6 @@ public abstract class F2<A, B, C> {
   public final F2<Array<A>, Array<B>, Array<C>> arrayM() {
     return new F2<Array<A>, Array<B>, Array<C>>() {
       public Array<C> f(final Array<A> a, final Array<B> b) {
-        return a.bind(b, F2.this.curry());
-      }
-    };
-  }
-
-  /**
-   * Promotes this function to a function on Promises.
-   *
-   * @return This function promoted to transform Promises.
-   */
-  public final F2<Promise<A>, Promise<B>, Promise<C>> promiseM() {
-    return new F2<Promise<A>, Promise<B>, Promise<C>>() {
-      public Promise<C> f(final Promise<A> a, final Promise<B> b) {
         return a.bind(b, F2.this.curry());
       }
     };

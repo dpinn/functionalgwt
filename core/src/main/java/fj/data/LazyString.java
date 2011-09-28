@@ -16,8 +16,6 @@ import static fj.function.Characters.isSpaceChar;
 import static fj.Equal.charEqual;
 import static fj.Equal.streamEqual;
 
-import java.util.regex.Pattern;
-
 /**
  * A lazy (non-evaluated) immutable character string.
  */
@@ -229,16 +227,6 @@ public final class LazyString implements CharSequence {
    */
   public Option<Integer> indexOf(final LazyString cs) {
     return s.substreams().indexOf(eqS.eq(cs.s));
-  }
-
-  /**
-   * Regular expression pattern matching.
-   *
-   * @param regex A regular expression to match this lazy string.
-   * @return True if this string mathches the given regular expression, otherwise False.
-   */
-  public boolean matches(final String regex) {
-    return Pattern.matches(regex, this);
   }
 
   /**

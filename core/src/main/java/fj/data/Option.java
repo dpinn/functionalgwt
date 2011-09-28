@@ -522,32 +522,6 @@ public abstract class Option<A> implements Iterable<A> {
   }
 
   /**
-   * Returns an array projection of this optional value.
-   *
-   * @param c The class type of the array to return.
-   * @return An array projection of this optional value.
-   */
-  @SuppressWarnings({"unchecked"})
-  public final Array<A> toArray(final Class<A[]> c) {
-    if (isSome()) {
-      final A[] a = (A[]) java.lang.reflect.Array.newInstance(c.getComponentType(), 1);
-      a[0] = some();
-      return Array.array(a);
-    } else
-      return Array.array((A[]) java.lang.reflect.Array.newInstance(c.getComponentType(), 0));
-  }
-
-  /**
-   * Returns an array from this optional value.
-   *
-   * @param c The class type of the array to return.
-   * @return An array from this optional value.
-   */
-  public final A[] array(final Class<A[]> c) {
-    return toArray(c).array(c);
-  }
-
-  /**
    * Returns the value from this optional value, or if there is no value, returns <code>null</code>.
    * This is intended for interfacing with APIs that expect a <code>null</code> for non-existence.
    *

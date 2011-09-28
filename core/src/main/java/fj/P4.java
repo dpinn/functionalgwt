@@ -174,36 +174,6 @@ public abstract class P4<A, B, C, D> {
     return P4.<A, B, C, D>__4().lazy().f(this);
   }
 
-  /**
-   * Provides a memoising P4 that remembers its values.
-   *
-   * @return A P4 that calls this P4 once for any given element and remembers the value for subsequent calls.
-   */
-  public final P4<A, B, C, D> memo() {
-    return new P4<A, B, C, D>() {
-      private final P1<A> a = _1_().memo();
-      private final P1<B> b = _2_().memo();
-      private final P1<C> c = _3_().memo();
-      private final P1<D> d = _4_().memo();
-
-      public A _1() {
-        return a._1();
-      }
-
-      public B _2() {
-        return b._1();
-      }
-
-      public C _3() {
-        return c._1();
-      }
-
-      public D _4() {
-        return d._1();
-      }
-    };
-  }
-
 
   /**
    * Returns a function that returns the first element of a product.

@@ -1,6 +1,5 @@
 package fj.test;
 
-import fj.Effect;
 import fj.F;
 import static fj.P.p;
 import static fj.P.p2;
@@ -51,36 +50,15 @@ import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
-import java.util.Properties;
 import java.util.Stack;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.WeakHashMap;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.DelayQueue;
-import java.util.concurrent.Delayed;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 
 /**
  * Represents a shrinking strategy over the given type parameter if that type can be represented as
@@ -395,28 +373,6 @@ public final class Shrink<A> {
   }
 
   /**
-   * A shrink strategy for bit sets.
-   */
-  public static final Shrink<BitSet> shrinkBitSet =
-      shrinkList(shrinkBoolean).map(Java.List_BitSet, Java.BitSet_List);
-
-  /**
-   * A shrink strategy for calendars.
-   */
-  public static final Shrink<Calendar> shrinkCalendar =
-      shrinkLong.map(new F<Long, Calendar>() {
-        public Calendar f(final Long i) {
-          final Calendar c = Calendar.getInstance();
-          c.setTimeInMillis(i);
-          return c;
-        }
-      }, new F<Calendar, Long>() {
-        public Long f(final Calendar c) {
-          return c.getTime().getTime();
-        }
-      });
-
-  /**
    * A shrink strategy for dates.
    */
   public static final Shrink<Date> shrinkDate =
@@ -431,27 +387,6 @@ public final class Shrink<A> {
       });
 
   /**
-   * A shrink strategy for enum maps.
-   *
-   * @param sk The shrink strategy for keys.
-   * @param sv The shrink stratgey for values.
-   * @return A shrink strategy for enum maps.
-   */
-  public static <K extends Enum<K>, V> Shrink<EnumMap<K, V>> shrinkEnumMap(final Shrink<K> sk, final Shrink<V> sv) {
-    return shrinkHashtable(sk, sv).map(new F<Hashtable<K, V>, EnumMap<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public EnumMap<K, V> f(final Hashtable<K, V> h) {
-        return new EnumMap<K, V>(h);
-      }
-    }, new F<EnumMap<K, V>, Hashtable<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public Hashtable<K, V> f(final EnumMap<K, V> m) {
-        return new Hashtable<K, V>(m);
-      }
-    });
-  }
-
-  /**
    * A shrink strategy for enum sets.
    *
    * @param sa The shrink strategy for the elements.
@@ -462,43 +397,6 @@ public final class Shrink<A> {
   }
 
   /**
-   * A shrink strategy for gregorian calendars.
-   */
-  public static final Shrink<GregorianCalendar> shrinkGregorianCalendar =
-      shrinkLong.map(new F<Long, GregorianCalendar>() {
-        public GregorianCalendar f(final Long i) {
-          final GregorianCalendar c = new GregorianCalendar();
-          c.setTimeInMillis(i);
-          return c;
-        }
-      }, new F<GregorianCalendar, Long>() {
-        public Long f(final GregorianCalendar c) {
-          return c.getTime().getTime();
-        }
-      });
-
-  /**
-   * A shrink strategy for hash maps.
-   *
-   * @param sk The shrink strategy for keys.
-   * @param sv The shrink stratgey for values.
-   * @return A shrink strategy for hash maps.
-   */
-  public static <K, V> Shrink<HashMap<K, V>> shrinkHashMap(final Shrink<K> sk, final Shrink<V> sv) {
-    return shrinkHashtable(sk, sv).map(new F<Hashtable<K, V>, HashMap<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public HashMap<K, V> f(final Hashtable<K, V> h) {
-        return new HashMap<K, V>(h);
-      }
-    }, new F<HashMap<K, V>, Hashtable<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public Hashtable<K, V> f(final HashMap<K, V> m) {
-        return new Hashtable<K, V>(m);
-      }
-    });
-  }
-
-  /**
    * A shrink strategy for hash sets.
    *
    * @param sa The shrink strategy for the elements.
@@ -506,82 +404,6 @@ public final class Shrink<A> {
    */
   public static <A> Shrink<HashSet<A>> shrinkHashSet(final Shrink<A> sa) {
     return shrinkList(sa).map(Java.<A>List_HashSet(), Java.<A>HashSet_List());
-  }
-
-  /**
-   * A shrink strategy for hash tables.
-   *
-   * @param sk The shrink strategy for keys.
-   * @param sv The shrink stratgey for values.
-   * @return A shrink strategy for hash tables.
-   */
-  @SuppressWarnings({"UseOfObsoleteCollectionType"})
-  public static <K, V> Shrink<Hashtable<K, V>> shrinkHashtable(final Shrink<K> sk, final Shrink<V> sv) {
-    return shrinkList(shrinkP2(sk, sv)).map(new F<List<P2<K, V>>, Hashtable<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public Hashtable<K, V> f(final List<P2<K, V>> kvs) {
-        final Hashtable<K, V> h = new Hashtable<K, V>();
-        kvs.foreach(new Effect<P2<K, V>>() {
-          public void e(final P2<K, V> kv) {
-            h.put(kv._1(), kv._2());
-          }
-        });
-        return h;
-      }
-    }, new F<Hashtable<K, V>, List<P2<K, V>>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public List<P2<K, V>> f(final Hashtable<K, V> h) {
-        List<P2<K, V>> x = List.nil();
-
-        for (final K k : h.keySet()) {
-          x = x.snoc(p(k, h.get(k)));
-        }
-
-        return x;
-      }
-    });
-  }
-
-  /**
-   * A shrink strategy for identity hash maps.
-   *
-   * @param sk The shrink strategy for keys.
-   * @param sv The shrink stratgey for values.
-   * @return A shrink strategy for identity hash maps.
-   */
-  public static <K, V> Shrink<IdentityHashMap<K, V>> shrinkIdentityHashMap(final Shrink<K> sk, final Shrink<V> sv) {
-    return shrinkHashtable(sk, sv).map(new F<Hashtable<K, V>, IdentityHashMap<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public IdentityHashMap<K, V> f(final Hashtable<K, V> h) {
-        return new IdentityHashMap<K, V>(h);
-      }
-    }, new F<IdentityHashMap<K, V>, Hashtable<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public Hashtable<K, V> f(final IdentityHashMap<K, V> m) {
-        return new Hashtable<K, V>(m);
-      }
-    });
-  }
-
-  /**
-   * A shrink strategy for linked hash maps.
-   *
-   * @param sk The shrink strategy for keys.
-   * @param sv The shrink stratgey for values.
-   * @return A shrink strategy for linked hash maps.
-   */
-  public static <K, V> Shrink<LinkedHashMap<K, V>> shrinkLinkedHashMap(final Shrink<K> sk, final Shrink<V> sv) {
-    return shrinkHashtable(sk, sv).map(new F<Hashtable<K, V>, LinkedHashMap<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public LinkedHashMap<K, V> f(final Hashtable<K, V> h) {
-        return new LinkedHashMap<K, V>(h);
-      }
-    }, new F<LinkedHashMap<K, V>, Hashtable<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public Hashtable<K, V> f(final LinkedHashMap<K, V> m) {
-        return new Hashtable<K, V>(m);
-      }
-    });
   }
 
   /**
@@ -615,34 +437,6 @@ public final class Shrink<A> {
   }
 
   /**
-   * A shrink strategy for properties.
-   */
-  public static final Shrink<Properties> shrinkProperties = shrinkHashtable(shrinkString, shrinkString)
-      .map(new F<Hashtable<String, String>, Properties>() {
-        @SuppressWarnings({"UseOfObsoleteCollectionType"})
-        public Properties f(final Hashtable<String, String> h) {
-          final Properties p = new Properties();
-
-          for (final String k : h.keySet()) {
-            p.setProperty(k, h.get(k));
-          }
-
-          return p;
-        }
-      }, new F<Properties, Hashtable<String, String>>() {
-        @SuppressWarnings({"UseOfObsoleteCollectionType"})
-        public Hashtable<String, String> f(final Properties p) {
-          final Hashtable<String, String> t = new Hashtable<String, String>();
-
-          for (final Object s : p.keySet()) {
-            t.put((String) s, p.getProperty((String) s));
-          }
-
-          return t;
-        }
-      });
-
-  /**
    * A shrink strategy for stacks.
    *
    * @param sa The shrink strategy for the elements.
@@ -650,27 +444,6 @@ public final class Shrink<A> {
    */
   public static <A> Shrink<Stack<A>> shrinkStack(final Shrink<A> sa) {
     return shrinkList(sa).map(Java.<A>List_Stack(), Java.<A>Stack_List());
-  }
-
-  /**
-   * A shrink strategy for tree maps.
-   *
-   * @param sk The shrink strategy for keys.
-   * @param sv The shrink stratgey for values.
-   * @return A shrink strategy for tree maps.
-   */
-  public static <K, V> Shrink<TreeMap<K, V>> shrinkTreeMap(final Shrink<K> sk, final Shrink<V> sv) {
-    return shrinkHashtable(sk, sv).map(new F<Hashtable<K, V>, TreeMap<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public TreeMap<K, V> f(final Hashtable<K, V> h) {
-        return new TreeMap<K, V>(h);
-      }
-    }, new F<TreeMap<K, V>, Hashtable<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public Hashtable<K, V> f(final TreeMap<K, V> m) {
-        return new Hashtable<K, V>(m);
-      }
-    });
   }
 
   /**
@@ -693,133 +466,7 @@ public final class Shrink<A> {
     return shrinkList(sa).map(Java.<A>List_Vector(), Java.<A>Vector_List());
   }
 
-  /**
-   * A shrink strategy for weak hash maps.
-   *
-   * @param sk The shrink strategy for keys.
-   * @param sv The shrink stratgey for values.
-   * @return A shrink strategy for weak hash maps.
-   */
-  public static <K, V> Shrink<WeakHashMap<K, V>> shrinkWeakHashMap(final Shrink<K> sk, final Shrink<V> sv) {
-    return shrinkHashtable(sk, sv).map(new F<Hashtable<K, V>, WeakHashMap<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public WeakHashMap<K, V> f(final Hashtable<K, V> h) {
-        return new WeakHashMap<K, V>(h);
-      }
-    }, new F<WeakHashMap<K, V>, Hashtable<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public Hashtable<K, V> f(final WeakHashMap<K, V> m) {
-        return new Hashtable<K, V>(m);
-      }
-    });
-  }
-
   // END java.util
-
-  // BEGIN java.util.concurrent
-
-  /**
-   * A shrink strategy for array blocking queues.
-   *
-   * @param sa The shrink strategy for the elements.
-   * @return A shrink strategy for array blocking queues.
-   */
-  public static <A> Shrink<ArrayBlockingQueue<A>> shrinkArrayBlockingQueue(final Shrink<A> sa) {
-    return shrinkList(sa).map(Java.<A>List_ArrayBlockingQueue(false), Java.<A>ArrayBlockingQueue_List());
-  }
-
-  /**
-   * A shrink strategy for concurrent hash maps.
-   *
-   * @param sk The shrink strategy for keys.
-   * @param sv The shrink stratgey for values.
-   * @return A shrink strategy for concurrent hash maps.
-   */
-  public static <K, V> Shrink<ConcurrentHashMap<K, V>> shrinkConcurrentHashMap(final Shrink<K> sk, final Shrink<V> sv) {
-    return shrinkHashtable(sk, sv).map(new F<Hashtable<K, V>, ConcurrentHashMap<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public ConcurrentHashMap<K, V> f(final Hashtable<K, V> h) {
-        return new ConcurrentHashMap<K, V>(h);
-      }
-    }, new F<ConcurrentHashMap<K, V>, Hashtable<K, V>>() {
-      @SuppressWarnings({"UseOfObsoleteCollectionType"})
-      public Hashtable<K, V> f(final ConcurrentHashMap<K, V> m) {
-        return new Hashtable<K, V>(m);
-      }
-    });
-  }
-
-  /**
-   * A shrink strategy for concurrent linked queues.
-   *
-   * @param sa The shrink strategy for the elements.
-   * @return A shrink strategy for concurrent linked queues.
-   */
-  public static <A> Shrink<ConcurrentLinkedQueue<A>> shrinkConcurrentLinkedQueue(final Shrink<A> sa) {
-    return shrinkList(sa).map(Java.<A>List_ConcurrentLinkedQueue(), Java.<A>ConcurrentLinkedQueue_List());
-  }
-
-  /**
-   * A shrink strategy for copy on write array lists.
-   *
-   * @param sa The shrink strategy for the elements.
-   * @return A shrink strategy for copy on write array lists.
-   */
-  public static <A> Shrink<CopyOnWriteArrayList<A>> shrinkCopyOnWriteArrayList(final Shrink<A> sa) {
-    return shrinkList(sa).map(Java.<A>List_CopyOnWriteArrayList(), Java.<A>CopyOnWriteArrayList_List());
-  }
-
-  /**
-   * A shrink strategy for copy on write array sets.
-   *
-   * @param sa The shrink strategy for the elements.
-   * @return A shrink strategy for copy on write array sets.
-   */
-  public static <A> Shrink<CopyOnWriteArraySet<A>> shrinkCopyOnWriteArraySet(final Shrink<A> sa) {
-    return shrinkList(sa).map(Java.<A>List_CopyOnWriteArraySet(), Java.<A>CopyOnWriteArraySet_List());
-  }
-
-  /**
-   * A shrink strategy for delay queues.
-   *
-   * @param sa The shrink strategy for the elements.
-   * @return A shrink strategy for delay queues.
-   */
-  public static <A extends Delayed> Shrink<DelayQueue<A>> shrinkDelayQueue(final Shrink<A> sa) {
-    return shrinkList(sa).map(Java.<A>List_DelayQueue(), Java.<A>DelayQueue_List());
-  }
-
-  /**
-   * A shrink strategy for linked blocking queues.
-   *
-   * @param sa The shrink strategy for the elements.
-   * @return A shrink strategy for linked blocking queues.
-   */
-  public static <A> Shrink<LinkedBlockingQueue<A>> shrinkLinkedBlockingQueue(final Shrink<A> sa) {
-    return shrinkList(sa).map(Java.<A>List_LinkedBlockingQueue(), Java.<A>LinkedBlockingQueue_List());
-  }
-
-  /**
-   * A shrink strategy for priority blocking queues.
-   *
-   * @param sa The shrink strategy for the elements.
-   * @return A shrink strategy for priority blocking queues.
-   */
-  public static <A> Shrink<PriorityBlockingQueue<A>> shrinkPriorityBlockingQueue(final Shrink<A> sa) {
-    return shrinkList(sa).map(Java.<A>List_PriorityBlockingQueue(), Java.<A>PriorityBlockingQueue_List());
-  }
-
-  /**
-   * A shrink strategy for synchronous queues.
-   *
-   * @param sa The shrink strategy for the elements.
-   * @return A shrink strategy for synchronous queues.
-   */
-  public static <A> Shrink<SynchronousQueue<A>> shrinkSynchronousQueue(final Shrink<A> sa) {
-    return shrinkList(sa).map(Java.<A>List_SynchronousQueue(false), Java.<A>SynchronousQueue_List());
-  }
-
-  // END java.util.concurrent
 
   // BEGIN java.sql
 

@@ -18,8 +18,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="buildScala" level="project" />
-    <orderEntry type="module" module-name="functionaljava-core" />
+    <orderEntry type="module" module-name="functionalgwt-core" />
   </component>
 </module>
 

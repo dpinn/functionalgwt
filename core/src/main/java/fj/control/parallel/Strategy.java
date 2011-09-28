@@ -10,16 +10,8 @@ import static fj.Function.compose;
 import static fj.Function.curry;
 import static fj.P1.fmap;
 import static fj.P1.sequence;
-import fj.data.Java;
 import fj.data.List;
 import fj.data.Array;
-
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 /**
  * Functional-style parallel evaluation strategies.
@@ -88,16 +80,6 @@ public final class Strategy<A> {
         return concurry(curry(f).f(b));
       }
     };
-  }
-
-  /**
-   * Waits for every Future in a list to obtain a value, and collects those values in a list.
-   *
-   * @param xs The list of Futures from which to get values.
-   * @return A list of values extracted from the Futures in the argument list.
-   */
-  public static <A> List<P1<A>> mergeAll(final List<Future<A>> xs) {
-    return xs.map(Strategy.<A>obtain());
   }
 
   /**
@@ -352,102 +334,6 @@ public final class Strategy<A> {
   }
 
   /**
-   * Returns a function which returns a product-1 which waits for the given Future to obtain a value.
-   *
-   * @return A function which, given a Future, yields a product-1 that waits for it.
-   */
-  public static <A> F<Future<A>, P1<A>> obtain() {
-    return new F<Future<A>, P1<A>>() {
-      public P1<A> f(final Future<A> t) {
-        return obtain(t);
-      }
-    };
-  }
-
-  /**
-   * Provides a product-1 that waits for the given future to obtain a value.
-   *
-   * @param t A Future for which to wait.
-   * @return A product-1 that waits for the given future to obtain a value.
-   */
-  public static <A> P1<A> obtain(final Future<A> t) {
-    return new P1<A>() {
-      public A _1() {
-        try {
-          return t.get();
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-          throw new Error(e);
-        } catch (ExecutionException e) {
-          throw new Error(e);
-        }
-      }
-    };
-  }
-
-  /**
-   * Returns an Effect that waits for a given Future to obtain a value, discarding the value.
-   *
-   * @return An effect, which, given a Future, waits for it to obtain a value, discarding the value.
-   */
-  public static <A> Effect<Future<A>> discard() {
-    return new Effect<Future<A>>() {
-      public void e(final Future<A> a) {
-        Strategy.<A>obtain().f(a)._1();
-      }
-    };
-  }
-
-  /**
-   * Provides a simple parallelization strategy that creates, and discards, a new thread for
-   * every evaluation.
-   *
-   * @return a simple parallelization strategy that creates, and discards, a new thread for
-   *         every evaluation.
-   */
-  public static <A> Strategy<A> simpleThreadStrategy() {
-    return strategy(new F<P1<A>, P1<A>>() {
-      public P1<A> f(final P1<A> p) {
-        final FutureTask<A> t = new FutureTask<A>(Java.<A>P1_Callable().f(p));
-        new Thread(t).start();
-        return obtain(t);
-      }
-    });
-  }
-
-  /**
-   * Provides a parallelization strategy that uses an ExecutorService to control the method and
-   * degree of parallelism.
-   *
-   * @param s The ExecutorService to use for scheduling evaluations.
-   * @return A Strategy that uses the provided ExecutorService to control the method and degree
-   *         of parallelism.
-   */
-  public static <A> Strategy<A> executorStrategy(final ExecutorService s) {
-    return strategy(new F<P1<A>, P1<A>>() {
-      public P1<A> f(final P1<A> p) {
-        return obtain(s.submit(Java.<A>P1_Callable().f(p)));
-      }
-    });
-  }
-
-  /**
-   * Provides a parallelization strategy that uses a CompletionService to control the method and
-   * degree of parallelism, and where each parallel task's completion is registered with the service.
-   *
-   * @param s The CompletionService to use for scheduling evaluations and detect their completion.
-   * @return A Strategy that uses the provided CompletionService to control the method and degree of parallelism,
-   *         and notifies the service of task completion.
-   */
-  public static <A> Strategy<A> completionStrategy(final CompletionService<A> s) {
-    return strategy(new F<P1<A>, P1<A>>() {
-      public P1<A> f(final P1<A> p) {
-        return obtain(s.submit(Java.<A>P1_Callable().f(p)));
-      }
-    });
-  }
-
-  /**
    * Provides a strategy that performs sequential (non-concurrent) evaluation of its argument.
    *
    * @return A strategy that performs sequential (non-concurrent) evaluation of its argument.
@@ -533,20 +419,6 @@ public final class Strategy<A> {
             }
           }
         };
-      }
-    });
-  }
-
-  /**
-   * Provides a normalising strategy that fully evaluates its Callable argument.
-   *
-   * @param s A non-normalising strategy to use for the evaluation.
-   * @return A new strategy that fully evaluates Callables, using the given strategy.
-   */
-  public static <A> Strategy<Callable<A>> callableStrategy(final Strategy<Callable<A>> s) {
-    return s.comap(new F<P1<Callable<A>>, P1<Callable<A>>>() {
-      public P1<Callable<A>> f(final P1<Callable<A>> a) {
-        return P1.curry(Callables.<A>normalise()).f(a._1());
       }
     });
   }

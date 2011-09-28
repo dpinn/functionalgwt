@@ -75,7 +75,7 @@ public final class Integers {
    */
   public static final F<Integer, F<Integer, Integer>> power = curry(new F2<Integer, Integer, Integer>() {
     public Integer f(final Integer a, final Integer b) {
-      return (int) StrictMath.pow(a, b);
+      return (int) Math.pow(a, b);
     }
   });
 

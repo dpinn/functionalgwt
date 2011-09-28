@@ -472,56 +472,6 @@ public abstract class P8<A, B, C, D, E, F, G, H> {
     return P8.<A, B, C, D, E, F, G, H>__8().lazy().f(this);
   }
 
-  /**
-   * Provides a memoising P8 that remembers its values.
-   *
-   * @return A P8 that calls this P8 once for any given element and remembers the value for subsequent calls.
-   */
-  public final P8<A, B, C, D, E, F, G, H> memo() {
-    return new P8<A, B, C, D, E, F, G, H>() {
-      private final P1<A> a = _1_().memo();
-      private final P1<B> b = _2_().memo();
-      private final P1<C> c = _3_().memo();
-      private final P1<D> d = _4_().memo();
-      private final P1<E> e = _5_().memo();
-      private final P1<F> f = _6_().memo();
-      private final P1<G> g = _7_().memo();
-      private final P1<H> h = _8_().memo();
-
-      public A _1() {
-        return a._1();
-      }
-
-      public B _2() {
-        return b._1();
-      }
-
-      public C _3() {
-        return c._1();
-      }
-
-      public D _4() {
-        return d._1();
-      }
-
-      public E _5() {
-        return e._1();
-      }
-
-      public F _6() {
-        return f._1();
-      }
-
-      public G _7() {
-        return g._1();
-      }
-
-      public H _8() {
-        return h._1();
-      }
-    };
-  }
-
 
   /**
    * Returns a function that returns the first element of a product.

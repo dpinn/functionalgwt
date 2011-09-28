@@ -3,7 +3,6 @@ package fj;
 import fj.data.List;
 import fj.data.Stream;
 import fj.data.Array;
-import java.lang.ref.SoftReference;
 
 /**
  * A product-1. Also, the identity monad.
@@ -186,31 +185,6 @@ public abstract class P1<A> {
     return new P1<Array<A>>() {
       public Array<A> _1() {
         return as.map(P1.<A>__1());
-      }
-    };
-  }
-
-  /**
-   * Provides a memoising P1 that remembers its value.
-   *
-   * @return A P1 that calls this P1 once and remembers the value for subsequent calls.
-   */
-  public final P1<A> memo() {
-    final P1<A> self = this;
-    return new P1<A>() {
-      private final Object latch = new Object();
-      @SuppressWarnings({"InstanceVariableMayNotBeInitialized"})
-      private volatile SoftReference<A> v;
-
-      public A _1() {
-        A a = v != null ? v.get() : null;
-        if (a == null)
-          synchronized (latch) {
-            if (v == null || v.get() == null)
-              a = self._1();
-            v = new SoftReference<A>(a);
-          }
-        return a;
       }
     };
   }

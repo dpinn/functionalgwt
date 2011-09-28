@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/functionaljava.iml" filepath="$PROJECT_DIR$/functionaljava.iml" />
-      <module fileurl="file://$PROJECT_DIR$/core/functionaljava-core.iml" filepath="$PROJECT_DIR$/core/functionaljava-core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/demo/functionaljava-demo.iml" filepath="$PROJECT_DIR$/demo/functionaljava-demo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/fjscala/functionaljava-scala.iml" filepath="$PROJECT_DIR$/fjscala/functionaljava-scala.iml" />
-      <module fileurl="file://$PROJECT_DIR$/project/project.iml" filepath="$PROJECT_DIR$/project/project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/functionalgwt.iml" filepath="$PROJECT_DIR$/functionalgwt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/functionalgwt-core.iml" filepath="$PROJECT_DIR$/core/functionalgwt-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/demo/functionalgwt-demo.iml" filepath="$PROJECT_DIR$/demo/functionalgwt-demo.iml" />
     </modules>
   </component>
 </project>

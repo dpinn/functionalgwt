@@ -1,3 +1,6 @@
+Functional GWT is a version of Functional Java that can be used in Google Web Toolkit (GWT) projects. It uses only the subset of the Java runtime library that is emulated by GWT.
+The current version of Functional GWT has been derived naively from Functional Java simply by removing classes and methods that use Java runtime library features that are not emulated by GWT.
+
 Functional Java is an open source library that seeks to improve the experience of using the Java programming language in a production environment. The library implements several advanced programming concepts that assist in achieving composition-oriented development. Functional Java is written using vanilla Java 1.5 syntax and requires no external supporting libraries. The JAR file will work with your Java 1.5 project without any additional effort.
 
 Functional Java also serves as a platform for learning functional programming concepts by introducing these concepts using a familiar language. The library is intended for use in production applications and is thoroughly tested using the technique of automated specification-based testing with ScalaCheck.
