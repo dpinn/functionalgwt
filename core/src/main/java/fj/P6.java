@@ -254,61 +254,6 @@ public abstract class P6<A, B, C, D, E, F> {
   }
 
   /**
-   * Returns the 1-product projection over the first element.
-   *
-   * @return the 1-product projection over the first element.
-   */
-  public final P1<A> _1_() {
-    return P6.<A, B, C, D, E, F>__1().lazy().f(this);
-  }
-
-  /**
-   * Returns the 1-product projection over the second element.
-   *
-   * @return the 1-product projection over the second element.
-   */
-  public final P1<B> _2_() {
-    return P6.<A, B, C, D, E, F>__2().lazy().f(this);
-  }
-
-  /**
-   * Returns the 1-product projection over the third element.
-   *
-   * @return the 1-product projection over the third element.
-   */
-  public final P1<C> _3_() {
-    return P6.<A, B, C, D, E, F>__3().lazy().f(this);
-  }
-
-  /**
-   * Returns the 1-product projection over the fourth element.
-   *
-   * @return the 1-product projection over the fourth element.
-   */
-  public final P1<D> _4_() {
-    return P6.<A, B, C, D, E, F>__4().lazy().f(this);
-  }
-
-  /**
-   * Returns the 1-product projection over the fifth element.
-   *
-   * @return the 1-product projection over the fifth element.
-   */
-  public final P1<E> _5_() {
-    return P6.<A, B, C, D, E, F>__5().lazy().f(this);
-  }
-
-  /**
-   * Returns the 1-product projection over the sixth element.
-   *
-   * @return the 1-product projection over the sixth element.
-   */
-  public final P1<F> _6_() {
-    return P6.<A, B, C, D, E, F>__6().lazy().f(this);
-  }
-
-
-  /**
    * Returns a function that returns the first element of a product.
    *
    * @return A function that returns the first element of a product.

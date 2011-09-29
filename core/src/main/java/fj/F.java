@@ -1,7 +1,5 @@
 package fj;
 
-import fj.control.parallel.Actor;
-import fj.control.parallel.Strategy;
 import fj.data.Array;
 import fj.data.Either;
 import fj.data.IterableW;
@@ -20,9 +18,7 @@ import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.TreeSet;
 
-import static fj.data.Option.some;
 import static fj.data.Stream.iterableStream;
-import static fj.data.Zipper.fromStream;
 
 /**
  * A transformation or function from <code>A</code> to <code>B</code>. This type can be represented
@@ -183,23 +179,6 @@ public abstract class F<A, B> {
   }
 
   /**
-   * Promotes this function so that it returns its result in a product-1. Kleisli arrow for P1.
-   *
-   * @return This function promoted to return its result in a product-1.
-   */
-  public final F<A, P1<B>> lazy() {
-    return new F<A, P1<B>>() {
-      public P1<B> f(final A a) {
-        return new P1<B>() {
-          public B _1() {
-            return F.this.f(a);
-          }
-        };
-      }
-    };
-  }
-
-  /**
    * Promotes this function to map over a product-1.
    *
    * @return This function promoted to map over a product-1.
@@ -208,19 +187,6 @@ public abstract class F<A, B> {
     return new F<P1<A>, P1<B>>() {
       public P1<B> f(final P1<A> p) {
         return p.map(F.this);
-      }
-    };
-  }
-
-  /**
-   * Promotes this function so that it returns its result in an Option. Kleisli arrow for Option.
-   *
-   * @return This function promoted to return its result in an Option.
-   */
-  public final F<A, Option<B>> optionK() {
-    return new F<A, Option<B>>() {
-      public Option<B> f(final A a) {
-        return some(F.this.f(a));
       }
     };
   }
@@ -239,19 +205,6 @@ public abstract class F<A, B> {
   }
 
   /**
-   * Promotes this function so that it returns its result in a List. Kleisli arrow for List.
-   *
-   * @return This function promoted to return its result in a List.
-   */
-  public final F<A, List<B>> listK() {
-    return new F<A, List<B>>() {
-      public List<B> f(final A a) {
-        return List.single(F.this.f(a));
-      }
-    };
-  }
-
-  /**
    * Promotes this function to map over a List.
    *
    * @return This function promoted to map over a List.
@@ -260,19 +213,6 @@ public abstract class F<A, B> {
     return new F<List<A>, List<B>>() {
       public List<B> f(final List<A> x) {
         return x.map(F.this);
-      }
-    };
-  }
-
-  /**
-   * Promotes this function so that it returns its result in a Stream. Kleisli arrow for Stream.
-   *
-   * @return This function promoted to return its result in a Stream.
-   */
-  public final F<A, Stream<B>> streamK() {
-    return new F<A, Stream<B>>() {
-      public Stream<B> f(final A a) {
-        return Stream.single(F.this.f(a));
       }
     };
   }
@@ -291,19 +231,6 @@ public abstract class F<A, B> {
   }
 
   /**
-   * Promotes this function so that it returns its result in a Array. Kleisli arrow for Array.
-   *
-   * @return This function promoted to return its result in a Array.
-   */
-  public final F<A, Array<B>> arrayK() {
-    return new F<A, Array<B>>() {
-      public Array<B> f(final A a) {
-        return Array.single(F.this.f(a));
-      }
-    };
-  }
-
-  /**
    * Promotes this function to map over a Array.
    *
    * @return This function promoted to map over a Array.
@@ -312,19 +239,6 @@ public abstract class F<A, B> {
     return new F<Array<A>, Array<B>>() {
       public Array<B> f(final Array<A> x) {
         return x.map(F.this);
-      }
-    };
-  }
-
-  /**
-   * Returns a function that comaps over a given actor.
-   *
-   * @return A function that comaps over a given actor.
-   */
-  public final F<Actor<B>, Actor<A>> comapActor() {
-    return new F<Actor<B>, Actor<A>>() {
-      public Actor<A> f(final Actor<B> a) {
-        return a.comap(F.this);
       }
     };
   }
@@ -441,20 +355,6 @@ public abstract class F<A, B> {
   }
 
   /**
-   * Promotes this function to return its value in a Set.
-   *
-   * @param o An order for the set.
-   * @return This function promoted to return its value in a Set.
-   */
-  public final F<A, Set<B>> setK(final Ord<B> o) {
-    return new F<A, Set<B>>() {
-      public Set<B> f(final A a) {
-        return Set.single(o, F.this.f(a));
-      }
-    };
-  }
-
-  /**
    * Promotes this function to map over a Set.
    *
    * @param o An order for the resulting set.
@@ -464,19 +364,6 @@ public abstract class F<A, B> {
     return new F<Set<A>, Set<B>>() {
       public Set<B> f(final Set<A> set) {
         return set.map(o, F.this);
-      }
-    };
-  }
-
-  /**
-   * Promotes this function to return its value in a Tree.
-   *
-   * @return This function promoted to return its value in a Tree.
-   */
-  public final F<A, Tree<B>> treeK() {
-    return new F<A, Tree<B>>() {
-      public Tree<B> f(final A a) {
-        return Tree.leaf(F.this.f(a));
       }
     };
   }
@@ -502,15 +389,6 @@ public abstract class F<A, B> {
   }
 
   /**
-   * Promotes this function to return its value in a TreeZipper.
-   *
-   * @return This function promoted to return its value in a TreeZipper.
-   */
-  public final F<A, TreeZipper<B>> treeZipperK() {
-    return treeK().andThen(TreeZipper.<B>fromTree());
-  }
-
-  /**
    * Promotes this function to map over a TreeZipper.
    *
    * @return This function promoted to map over a TreeZipper.
@@ -519,34 +397,6 @@ public abstract class F<A, B> {
     return new F<TreeZipper<A>, TreeZipper<B>>() {
       public TreeZipper<B> f(final TreeZipper<A> zipper) {
         return zipper.map(F.this);
-      }
-    };
-  }
-
-  /**
-   * Promotes this function so that it returns its result on the failure side of a Validation.
-   * Kleisli arrow for the Validation failure projection.
-   *
-   * @return This function promoted to return its result on the failure side of a Validation.
-   */
-  public final <C> F<A, Validation<B, C>> failK() {
-    return new F<A, Validation<B, C>>() {
-      public Validation<B, C> f(final A a) {
-        return Validation.fail(F.this.f(a));
-      }
-    };
-  }
-
-  /**
-   * Promotes this function so that it returns its result on the success side of an Validation.
-   * Kleisli arrow for the Validation success projection.
-   *
-   * @return This function promoted to return its result on the success side of an Validation.
-   */
-  public final <C> F<A, Validation<C, B>> successK() {
-    return new F<A, Validation<C, B>>() {
-      public Validation<C, B> f(final A a) {
-        return Validation.success(F.this.f(a));
       }
     };
   }
@@ -605,19 +455,6 @@ public abstract class F<A, B> {
         return v.on(F.this);
       }
     };
-  }
-
-  /**
-   * Promotes this function to return its value in a Zipper.
-   *
-   * @return This function promoted to return its value in a Zipper.
-   */
-  public final F<A, Zipper<B>> zipperK() {
-    return streamK().andThen(new F<Stream<B>, Zipper<B>>() {
-      public Zipper<B> f(final Stream<B> stream) {
-        return fromStream(stream).some();
-      }
-    });
   }
 
   /**

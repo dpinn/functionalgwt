@@ -587,14 +587,6 @@ public final class Arbitrary<A> {
       }));
 
   /**
-   * An arbitrary implementation for string values with alpha-numeric characters.
-   */
-  public static final Arbitrary<String> arbAlphaNumString =
-      arbitrary(arbList(arbitrary(elements(range(charEnumerator, 'a', 'z').append(
-          range(charEnumerator, 'A', 'Z')).append(
-          range(charEnumerator, '0', '9')).toArray().array(Character[].class)))).gen.map(asString()));
-
-  /**
    * An arbitrary implementation for string buffer values.
    */
   public static final Arbitrary<StringBuffer> arbStringBuffer =

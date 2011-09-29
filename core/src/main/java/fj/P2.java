@@ -163,24 +163,6 @@ public abstract class P2<A, B> {
   }
 
   /**
-   * Returns the 1-product projection over the first element.
-   *
-   * @return the 1-product projection over the first element.
-   */
-  public final P1<A> _1_() {
-    return P2.<A, B>__1().lazy().f(this);
-  }
-
-  /**
-   * Returns the 1-product projection over the second element.
-   *
-   * @return the 1-product projection over the second element.
-   */
-  public final P1<B> _2_() {
-    return P2.<A, B>__2().lazy().f(this);
-  }
-
-  /**
    * A first-class version of the split function.
    *
    * @param f A function that will map the first element of the given product.

@@ -19,10 +19,7 @@ import static fj.data.Option.some;
 import static java.lang.Math.min;
 import static java.lang.System.arraycopy;
 
-import java.util.AbstractCollection;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * Provides an interface to arrays.
@@ -97,16 +94,6 @@ public final class Array<A> implements Iterable<A> {
    */
   public boolean isNotEmpty() {
     return a.length != 0;
-  }
-
-  /**
-   * Returns a copy of the underlying primitive array.
-   *
-   * @param c A class for the returned array.
-   * @return A copy of the underlying primitive array.
-   */
-  public A[] array(final Class<A[]> c) {
-    return copyOf(a, a.length, c);
   }
 
   /**
@@ -904,19 +891,13 @@ public final class Array<A> implements Iterable<A> {
     }
   }
 
-  @SuppressWarnings({"SuspiciousSystemArraycopy", "unchecked", "ObjectEquality", "RedundantCast"})
-  public static <T, U> T[] copyOf(final U[] a, final int len, final Class<? extends T[]> newType) {
-    final T[] copy = (Object)newType == Object[].class
-        ? (T[]) new Object[len]
-        : (T[]) java.lang.reflect.Array.newInstance(newType.getComponentType(), len);
-    System.arraycopy(a, 0, copy, 0,
-        Math.min(a.length, len));
-    return copy;
-  }
-
-  @SuppressWarnings({"unchecked"})
   public static <T> T[] copyOf(final T[] a, final int len) {
-      return (T[]) copyOf(a, len, a.getClass());
+    final ArrayList<T> l = new ArrayList<T>(len);
+    for (int i = 0; i < a.length; i++)
+      l.add(a[i]);
+    @SuppressWarnings({"unchecked"})
+    final T[] result = (T[]) l.toArray();
+    return result;
   }
 
   public static char[] copyOfRange(final char[] a, final int from, final int to) {

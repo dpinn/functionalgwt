@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="functionalgwt-core:GWT">
+    <output-path>$PROJECT_DIR$/out/artifacts/functionalgwt_core_GWT</output-path>
+    <root id="archive" name="functionalgwt.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/core/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="functionalgwt-core" />
+      <element id="dir-copy" path="$PROJECT_DIR$/core/src/main/java" />
+    </root>
+  </artifact>
+</component>
